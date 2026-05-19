@@ -8,7 +8,7 @@ import { ResultsSummary } from '@/components/calculator/ResultsSummary';
 import { CharterExplanation } from '@/components/calculator/CharterExplanation';
 import { CrewConfiguration } from '@/components/calculator/CrewConfiguration';
 import { CostBreakdown } from '@/components/calculator/CostBreakdown';
-import { DepreciationModule, type TaxJurisdiction } from '@/components/calculator/DepreciationModule';
+import { type TaxJurisdiction } from '@/components/calculator/DepreciationModule';
 import { PdfExport } from '@/components/calculator/PdfExport';
 import { AircraftComparison } from '@/components/calculator/AircraftComparison';
 import { Button } from '@/components/ui/button';
@@ -372,6 +372,7 @@ const Calculator = () => {
         </section>
 
         {/* Depreciation & Investment */}
+        {/*
         <DepreciationModule
           owners={owners}
           purchasePrice={purchasePrice}
@@ -385,6 +386,7 @@ const Calculator = () => {
           onJurisdictionChange={setJurisdiction}
           onManualRateChange={setManualRate}
         />
+        */}
 
         {/* Aircraft Comparison */}
         <section className="mb-12">
