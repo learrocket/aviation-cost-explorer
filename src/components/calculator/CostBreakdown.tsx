@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { type AircraftBudget, formatCurrency } from '@/data/aircraftData';
-import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { PricingExplainer } from './PricingExplainer';
 
 interface CostBreakdownProps {
   aircraft: AircraftBudget;
@@ -119,7 +126,38 @@ export const CostBreakdown = ({
               {aircraft.variableCosts.map((cost, idx) => (
                 <div key={idx} className="flex justify-between px-4 py-2 text-sm">
                   <div>
-                    <span className="text-muted-foreground">{cost.name}</span>
+                    <span className="text-muted-foreground inline-flex items-center gap-1">
+                      {cost.name}
+                      {typeof cost.minHoursPerYear === 'number' && cost.annualMinimumEUR ? (
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-primary/70 hover:text-primary transition-colors"
+                                aria-label="Program pricing explanation"
+                              >
+                                <Info className="w-3.5 h-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+                              <p className="font-medium mb-1">Minimum {cost.minHoursPerYear} h/year</p>
+                              <p>
+                                Below the minimum you pay a flat charge of{' '}
+                                <span className="font-medium">
+                                  {formatCurrency(cost.annualMinimumEUR)}
+                                </span>{' '}
+                                no matter how little you fly. Above it, every extra hour is billed
+                                at {formatCurrency(cost.ratePerHourEUR ?? cost.costPerHour)}/hr.
+                              </p>
+                              <p className="mt-1 opacity-75">
+                                Actual rates depend on aircraft and engine age.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ) : null}
+                    </span>
                     {cost.notes && (
                       <span className="text-xs text-muted-foreground/70 ml-2">({cost.notes})</span>
                     )}
@@ -137,6 +175,11 @@ export const CostBreakdown = ({
             <div className="px-4 py-3 bg-amber-50 dark:bg-amber-950/30 text-xs text-amber-800 dark:text-amber-300 font-medium">
               ⚠️ Excludes landing, handling, parking, hotels, per diem, and catering. Expect €3,000–6,000 per sector for these costs (outside Bromma).
             </div>
+          </div>
+
+          {/* How pricing works — mini charts per program (engine, parts) */}
+          <div className="mt-3">
+            <PricingExplainer aircraft={aircraft} />
           </div>
         </CollapsibleContent>
       </Collapsible>

@@ -57,7 +57,7 @@ const Index = () => {
               </div>
               <h3 className="font-semibold text-lg mb-2">Aircraft Comparison</h3>
               <p className="text-sm text-muted-foreground">
-                Compare costs across Falcon 2000 LXS, Gulfstream G550, and Global 6000
+                Compare Challenger 3500, Praetor 600, and Global 6500 side by side
               </p>
             </div>
 
@@ -108,6 +108,7 @@ const Index = () => {
             {[
               { name: 'Bombardier Challenger 3500', fixed: '€1.10M', variable: '€4,207', charter: '€7,000' },
               { name: 'Embraer Praetor 600', fixed: '€1.10M', variable: '€4,101', charter: '€7,000' },
+              { name: 'Bombardier Global 6500', fixed: '€1.55M', variable: '€6,140', charter: '€8,500' },
             ].map((aircraft) => (
               <div 
                 key={aircraft.name}

@@ -8,9 +8,10 @@ import { ResultsSummary } from '@/components/calculator/ResultsSummary';
 import { CharterExplanation } from '@/components/calculator/CharterExplanation';
 import { CrewConfiguration } from '@/components/calculator/CrewConfiguration';
 import { CostBreakdown } from '@/components/calculator/CostBreakdown';
-import { type TaxJurisdiction } from '@/components/calculator/DepreciationModule';
+import { DepreciationModule, type TaxJurisdiction } from '@/components/calculator/DepreciationModule';
 import { PdfExport } from '@/components/calculator/PdfExport';
 import { AircraftComparison } from '@/components/calculator/AircraftComparison';
+import { SHOW_DEPRECIATION } from '@/lib/featureFlags';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
@@ -371,22 +372,22 @@ const Calculator = () => {
           </div>
         </section>
 
-        {/* Depreciation & Investment */}
-        {/*
-        <DepreciationModule
-          owners={owners}
-          purchasePrice={purchasePrice}
-          depreciationYears={depreciationYears}
-          estimatedResaleDecline={estimatedResaleDecline}
-          jurisdiction={jurisdiction}
-          manualRate={manualRate}
-          onPurchasePriceChange={setPurchasePrice}
-          onDepreciationYearsChange={setDepreciationYears}
-          onEstimatedResaleDeclineChange={setEstimatedResaleDecline}
-          onJurisdictionChange={setJurisdiction}
-          onManualRateChange={setManualRate}
-        />
-        */}
+        {/* Depreciation & Investment — temporarily hidden. Flip SHOW_DEPRECIATION to true to re-enable. */}
+        {SHOW_DEPRECIATION && (
+          <DepreciationModule
+            owners={owners}
+            purchasePrice={purchasePrice}
+            depreciationYears={depreciationYears}
+            estimatedResaleDecline={estimatedResaleDecline}
+            jurisdiction={jurisdiction}
+            manualRate={manualRate}
+            onPurchasePriceChange={setPurchasePrice}
+            onDepreciationYearsChange={setDepreciationYears}
+            onEstimatedResaleDeclineChange={setEstimatedResaleDecline}
+            onJurisdictionChange={setJurisdiction}
+            onManualRateChange={setManualRate}
+          />
+        )}
 
         {/* Aircraft Comparison */}
         <section className="mb-12">

@@ -7,12 +7,14 @@ import logoImage from '@/assets/1903-aviation-logo.png';
 import falconImage from '@/assets/aircraft-falcon-2000-lxs.png';
 import g550Image from '@/assets/aircraft-gulfstream-g550.png';
 import global6000Image from '@/assets/aircraft-global-6000.png';
+import global6500Image from '@/assets/aircraft-global-6500.jpg';
 import citationXLSImage from '@/assets/aircraft-citation-xls.png';
 import challenger300Image from '@/assets/aircraft-challenger-300.png';
 import challenger3500Image from '@/assets/aircraft-challenger-3500.jpg';
 import praetor600Image from '@/assets/aircraft-praetor-600.jpg';
 import { calculateAnnualAircraftCosts } from '@/lib/aircraftCosts';
 import { type TaxJurisdiction, TAX_PRESETS } from '@/components/calculator/DepreciationModule';
+import { SHOW_DEPRECIATION } from '@/lib/featureFlags';
 
 const aircraftImages: Record<string, string> = {
   'citation-xls': citationXLSImage,
@@ -22,6 +24,7 @@ const aircraftImages: Record<string, string> = {
   'embraer-praetor-600': praetor600Image,
   'gulfstream-g550': g550Image,
   'bombardier-global-6000': global6000Image,
+  'bombardier-global-6500': global6500Image,
 };
 
 const EXCLUDED_COSTS_NOTE = 'Landing, handling, parking, crew hotels, per diem, and catering are NOT included in these figures. Expect approx. 3,000-6,000 EUR per sector (outside Bromma).';
@@ -276,7 +279,8 @@ export const PdfExport = ({
       currentY = (doc as any).lastAutoTable.finalY;
     }
 
-    // ── Page 2: Investment & Depreciation ──
+    // ── Page 2: Investment & Depreciation ── (hidden when SHOW_DEPRECIATION is false)
+    if (SHOW_DEPRECIATION) {
     doc.addPage();
 
     // Page 2 header
@@ -434,6 +438,7 @@ export const PdfExport = ({
       15, currentY, { maxWidth: pageWidth - 30 }
     );
     doc.setFont('helvetica', 'normal');
+    } // end SHOW_DEPRECIATION
 
     // Page 1 footer
     doc.setPage(1);
@@ -449,13 +454,15 @@ export const PdfExport = ({
     doc.text(`2026 projections. All prices excl. VAT. © ${new Date().getFullYear()} 1903 Aviation`, 15, pageHeight - 6);
 
     // Page 2 footer
-    doc.setPage(2);
-    doc.setDrawColor(200, 200, 200);
-    doc.line(15, pageHeight - 14, pageWidth - 15, pageHeight - 14);
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(150, 150, 150);
-    doc.text(`2026 projections. All prices excl. VAT. © ${new Date().getFullYear()} 1903 Aviation`, 15, pageHeight - 6);
+    if (SHOW_DEPRECIATION) {
+      doc.setPage(2);
+      doc.setDrawColor(200, 200, 200);
+      doc.line(15, pageHeight - 14, pageWidth - 15, pageHeight - 14);
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(150, 150, 150);
+      doc.text(`2026 projections. All prices excl. VAT. © ${new Date().getFullYear()} 1903 Aviation`, 15, pageHeight - 6);
+    }
     
     const filename = `1903_${aircraft.model.replace(/\s+/g, '_')}_Cost_Summary.pdf`;
     doc.save(filename);

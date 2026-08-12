@@ -20,6 +20,14 @@ export interface VariableCostItem {
   name: string;
   costPerHour: number;
   notes?: string;
+  /**
+   * Optional program-minimum metadata. When present, the calculator will show
+   * a "How pricing works" explainer for this line, since below the annual
+   * minimum hours you pay a flat minimum charge regardless of actual usage.
+   */
+  minHoursPerYear?: number;
+  annualMinimumEUR?: number;
+  ratePerHourEUR?: number; // effective per-hour rate above the minimum (usually === costPerHour)
 }
 
 export interface DefaultCrewConfig {
@@ -492,8 +500,8 @@ const bombardierChallenger3500: AircraftBudget = {
   variableCosts: [
     { name: 'Fuel', costPerHour: 1250, notes: '1,000L × €1.25/L' },
     { name: 'En Route Fees', costPerHour: 301, notes: '$350 × 0.86 - Eurocontrol' },
-    { name: 'Engine Program (both engines)', costPerHour: 1061, notes: '$1,234/hr × 0.86 — Honeywell, min 300h/yr' },
-    { name: 'SmartParts', costPerHour: 640, notes: '$744/hr × 0.86' },
+    { name: 'Engine Program (both engines)', costPerHour: 1061, notes: '$1,234/hr × 0.86 — Honeywell', minHoursPerYear: 300, ratePerHourEUR: 1061, annualMinimumEUR: 318300 },
+    { name: 'SmartParts', costPerHour: 640, notes: '$744/hr × 0.86 — Bombardier SmartParts+', minHoursPerYear: 250, ratePerHourEUR: 640, annualMinimumEUR: 160000 },
     { name: 'APU Honeywell', costPerHour: 105, notes: '$152 × 0.86 × 80% APU usage' },
     { name: 'Airframe Maintenance Labour', costPerHour: 850, notes: 'Avsättningar för kommande service' },
   ],
@@ -531,8 +539,8 @@ const embraerPraetor600: AircraftBudget = {
   variableCosts: [
     { name: 'Fuel', costPerHour: 1250, notes: '1,000L × €1.25/L' },
     { name: 'En Route Fees', costPerHour: 301, notes: '$350 × 0.86 - Eurocontrol' },
-    { name: 'Engine Program (both engines)', costPerHour: 1061, notes: '$1,234/hr × 0.86 — placeholder, pending Embraer quote' },
-    { name: 'SmartParts / EEC', costPerHour: 640, notes: '$744/hr × 0.86 — placeholder, pending Embraer Executive Care' },
+    { name: 'Engine Program (both engines)', costPerHour: 1061, notes: '$1,234/hr × 0.86 — placeholder, pending Embraer quote', minHoursPerYear: 300, ratePerHourEUR: 1061, annualMinimumEUR: 318300 },
+    { name: 'SmartParts / EEC', costPerHour: 640, notes: '$744/hr × 0.86 — placeholder, pending Embraer Executive Care', minHoursPerYear: 250, ratePerHourEUR: 640, annualMinimumEUR: 160000 },
     { name: 'APU Honeywell', costPerHour: 105, notes: '$152 × 0.86 × 80% APU usage' },
     { name: 'Airframe Maintenance Labour', costPerHour: 744, notes: 'Praetor-specific — lower than CL3500 (€850/hr)' },
   ],
@@ -543,10 +551,81 @@ const embraerPraetor600: AircraftBudget = {
   contributionMarginPerHour: 2899,
 };
 
+// ============================================
+// BOMBARDIER GLOBAL 6500 (long-range heavy jet)
+// Source: Global_6500 budget xlsx (2026/07/07). USD/EUR = 0.85.
+// Total Fixed: €1,552,276/year • Variable: €6,140/hr • Charter: €8,500/hr
+// Program minimums: Motor RR 300h/yr, SmartParts+ 250h/yr.
+// ============================================
+const bombardierGlobal6500: AircraftBudget = {
+  id: 'bombardier-global-6500',
+  name: 'Bombardier Global 6500',
+  manufacturer: 'Bombardier',
+  model: 'Global 6500',
+  year: 2026,
+  exchangeRateUSDEUR: 0.85,
+  fuelPricePerLiter: 1.25,
+  fuelConsumptionPerHour: 1800,
+  cabinHeight: 1.91,
+  rangeNM: 6600,
+  passengerCapacity: 14,
+  cabinCrewPolicy: 'required',
+  // Warranty toggle intentionally omitted — only the super-mid new airframes
+  // (CL 3500, Praetor 600) have warranty pricing in scope.
+
+  crewCosts: {
+    captainTotal: 140918,       // 281,835 / 2 captains
+    firstOfficerTotal: 105688,  // 211,376 / 2 first officers
+    cabinCrewTotal: 76800,
+    flightEngineerTotal: 153600, // full-time rate; default is 0.5
+  },
+
+  defaultCrewConfig: {
+    captains: 2,
+    firstOfficers: 2,
+    cabinCrew: 1,
+    flightEngineers: 0.5,
+  },
+
+  fixedCosts: [
+    { category: 'Insurance', name: 'Health & Travel Insurance', monthlyEUR: 750, yearlyEUR: 9000, notes: 'Personalförsäkringar, reseförsäkring och sjukförsäkring' },
+    { category: 'Management', name: 'Management Fee / CAMO', monthlyEUR: 15000, yearlyEUR: 180000, notes: 'Kostnaden för att ha flygplanet på tillstånd' },
+    { category: 'Insurance', name: 'Aircraft Insurance', monthlyEUR: 5667, yearlyEUR: 68000, notes: '$80,000 × 0.85 — Värde ca 25 MUSD' },
+    { category: 'Technology', name: 'CAMP', monthlyEUR: 1558, yearlyEUR: 18700, notes: '$22,000 × 0.85' },
+    { category: 'Technology', name: 'INDS (Nav DB + Charts)', monthlyEUR: 970, yearlyEUR: 11645, notes: '$13,700 × 0.85' },
+    { category: 'Technology', name: 'Satcom', monthlyEUR: 1473, yearlyEUR: 17680, notes: '$20,800 × 0.85' },
+    { category: 'Technology', name: 'Starlink', monthlyEUR: 1700, yearlyEUR: 20400, notes: '$24,000 × 0.85' },
+    { category: 'Technology', name: 'Technical Manuals', monthlyEUR: 2090, yearlyEUR: 25075, notes: '$29,500 × 0.85' },
+    { category: 'Technology', name: 'Electronic Flight Bags (EFB)', monthlyEUR: 2833, yearlyEUR: 34000, notes: '$40,000 × 0.85' },
+    { category: 'Technology', name: 'Flight Data Monitor', monthlyEUR: 333, yearlyEUR: 4000 },
+    { category: 'Base Operations', name: 'Hangar', monthlyEUR: 12000, yearlyEUR: 144000, notes: 'Delad hangar' },
+    { category: 'Training', name: 'Education / Training', monthlyEUR: 26208, yearlyEUR: 314500, notes: '$370,000 × 0.85 — Simulatorutbildning för 4 piloter' },
+    { category: 'Equipment', name: 'Tools Technician', monthlyEUR: 417, yearlyEUR: 5000 },
+    { category: 'Other', name: 'Others (mobile, uniform, medical)', monthlyEUR: 2083, yearlyEUR: 25000 },
+    { category: 'Charter Operations', name: 'Avinode', monthlyEUR: 750, yearlyEUR: 9000 },
+    { category: 'Safety', name: 'Medair', monthlyEUR: 1622, yearlyEUR: 19465, notes: '$22,900 × 0.85' },
+  ],
+
+  variableCosts: [
+    { name: 'Fuel', costPerHour: 2250, notes: '1,800L × €1.25/L' },
+    { name: 'En Route Fees', costPerHour: 425, notes: '$500 × 0.85 - Eurocontrol' },
+    { name: 'Engine Program (both engines)', costPerHour: 1615, notes: '$1,900/hr × 0.85 — Rolls-Royce CorporateCare', minHoursPerYear: 300, ratePerHourEUR: 1615, annualMinimumEUR: 484500 },
+    { name: 'SmartParts', costPerHour: 300, notes: '$353/hr × 0.85 — Bombardier SmartParts+', minHoursPerYear: 250, ratePerHourEUR: 300, annualMinimumEUR: 75013 },
+    { name: 'APU Honeywell', costPerHour: 50, notes: '$100 × 0.85 × 50% APU usage' },
+    { name: 'Airframe Maintenance Labour', costPerHour: 1500, notes: 'Avsättningar för kommande service' },
+  ],
+
+  totalFixedCostsYearly: 1552276,
+  totalVariableCostPerHour: 6140, // 2250+425+1615+300+50+1500
+  charterPricePerHour: 8500,
+  contributionMarginPerHour: 2360,
+};
+
 // Active aircraft shown in the calculator
 export const aircraftDatabase: AircraftBudget[] = [
   bombardierChallenger3500,
   embraerPraetor600,
+  bombardierGlobal6500,
 ];
 
 // Inactive aircraft kept for future reference

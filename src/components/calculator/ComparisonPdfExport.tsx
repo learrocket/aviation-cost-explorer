@@ -7,6 +7,7 @@ import logoImage from '@/assets/1903-aviation-logo.png';
 import falconImage from '@/assets/aircraft-falcon-2000-lxs.png';
 import g550Image from '@/assets/aircraft-gulfstream-g550.png';
 import global6000Image from '@/assets/aircraft-global-6000.png';
+import global6500Image from '@/assets/aircraft-global-6500.jpg';
 import citationXLSImage from '@/assets/aircraft-citation-xls.png';
 import challenger300Image from '@/assets/aircraft-challenger-300.png';
 import challenger3500Image from '@/assets/aircraft-challenger-3500.jpg';
@@ -21,6 +22,7 @@ const aircraftImages: Record<string, string> = {
   'embraer-praetor-600': praetor600Image,
   'gulfstream-g550': g550Image,
   'bombardier-global-6000': global6000Image,
+  'bombardier-global-6500': global6500Image,
 };
 
 const EXCLUDED_COSTS_NOTE = 'Landing, handling, parking, crew hotels, per diem, and catering are NOT included. Expect approx. 3,000-6,000 EUR per sector (outside Bromma).';
