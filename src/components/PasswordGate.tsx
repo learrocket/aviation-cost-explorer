@@ -7,7 +7,7 @@ interface PasswordGateProps {
   onSuccess: () => void;
 }
 
-const PASSWORD = '1903test';
+const PASSWORDS = ['1903Ola', '1903ola', '1903test'];
 
 export const PasswordGate = ({ onSuccess }: PasswordGateProps) => {
   const [password, setPassword] = useState('');
@@ -17,7 +17,7 @@ export const PasswordGate = ({ onSuccess }: PasswordGateProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === PASSWORD) {
+    if (PASSWORDS.includes(password)) {
       sessionStorage.setItem('1903-authenticated', 'true');
       onSuccess();
     } else {
