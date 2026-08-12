@@ -50,21 +50,12 @@ export const AircraftSelector = ({ selectedAircraftId, onSelect }: AircraftSelec
         <Plane className="w-4 h-4 text-primary" />
         Select Aircraft
       </label>
-      
-      {/* Aircraft Image Display */}
-      {selectedAircraft && aircraftImages[selectedAircraftId] && (
-        <div className="flex justify-center py-4 bg-muted/30 rounded-lg">
-          <img 
-            src={aircraftImages[selectedAircraftId]} 
-            alt={selectedAircraft.name}
-            className="h-32 w-auto object-contain"
-          />
-        </div>
-      )}
-      
+
       <Select value={selectedAircraftId} onValueChange={handleChange}>
         <SelectTrigger className="w-full h-12 text-base bg-background">
-          <SelectValue placeholder="Choose an aircraft" />
+          <SelectValue placeholder="Choose an aircraft">
+            {selectedAircraft?.name}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-popover border border-border">
           {aircraftDatabase.map((aircraft) => (
@@ -89,6 +80,18 @@ export const AircraftSelector = ({ selectedAircraftId, onSelect }: AircraftSelec
           ))}
         </SelectContent>
       </Select>
+
+      {/* Selected aircraft preview */}
+      {selectedAircraft && aircraftImages[selectedAircraftId] && (
+        <div className="flex flex-col items-center gap-2 py-4 bg-muted/30 rounded-lg">
+          <img
+            src={aircraftImages[selectedAircraftId]}
+            alt={selectedAircraft.name}
+            className="h-32 w-auto object-contain"
+          />
+          <span className="text-sm text-muted-foreground">{selectedAircraft.name}</span>
+        </div>
+      )}
     </div>
   );
 };
